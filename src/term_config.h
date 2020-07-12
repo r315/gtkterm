@@ -40,7 +40,7 @@ struct configuration_port {
   gint delai;                  // end of char delay: in ms
   gint rs485_rts_time_before_transmit;
   gint rs485_rts_time_after_transmit;
-  gchar car;             // caractere à attendre
+  gchar car;             // caractere ï¿½ attendre
   gboolean echo;               // echo local
   gboolean crlfauto;         // line feed auto
 };
@@ -52,8 +52,8 @@ typedef struct {
   gint columns;
   gint scrollback;
   gboolean visual_bell;
-  GdkColor foreground_color;
-  GdkColor background_color;
+  GdkRGBA foreground_color;
+  GdkRGBA background_color;
   gdouble background_saturation;
   gchar *font;
 } display_config_t;
