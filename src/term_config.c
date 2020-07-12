@@ -158,7 +158,7 @@ extern GtkWidget *display;
 
 void Config_Port_Fenetre(GtkAction *action, gpointer data)
 {
-	GtkWidget *Table, *Label, *Bouton_OK, *Bouton_annule, 
+	GtkWidget *Grid, *Label, *Bouton_OK, *Bouton_annule, 
 	          *Combo, *Dialogue, *Frame, *CheckBouton, 
 	          *Spin, *Expander, *ExpanderVbox,
 	          *content_area, *action_area;
@@ -200,15 +200,16 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
     Frame = gtk_frame_new(_("Serial port"));
     gtk_box_pack_start(GTK_BOX(content_area), Frame, FALSE, TRUE, 5);
 
-    Table = gtk_table_new(4, 3, FALSE);
-    gtk_container_add(GTK_CONTAINER(Frame), Table);
+    Grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(Frame), Grid);
+    gtk_grid_set_row_spacing(GTK_GRID(Grid), 5);
 
     Label = gtk_label_new(_("Port:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 0, 1, 0, 1, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 0, 1, 1);
     Label = gtk_label_new(_("Baud Rate:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 1, 2, 0, 1, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 1, 0, 1 , 1);
     Label = gtk_label_new(_("Parity:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 2, 3, 0, 1, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 2, 0 ,1 ,1);
 
     // create the devices combo box, and add device strings
     Combo = gtk_combo_box_text_new_with_entry();
@@ -240,7 +241,7 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
     g_list_free(liste);
     g_free(chaine);
 
-    gtk_table_attach(GTK_TABLE(Table), Combo, 0, 1, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 0, 1,1,1);
     Combos[0] = Combo;
 
     Combo = gtk_combo_box_text_new_with_entry();
@@ -304,7 +305,7 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 		     "insert-text",
 		     G_CALLBACK(check_text_input), isdigit);
 
-    gtk_table_attach(GTK_TABLE(Table), Combo, 1, 2, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 1, 1, 1, 1);
     Combos[1] = Combo;
 
     Combo = gtk_combo_box_text_new();
@@ -324,15 +325,15 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 	    gtk_combo_box_set_active(GTK_COMBO_BOX(Combo), 2);
 	    break;
     }
-    gtk_table_attach(GTK_TABLE(Table), Combo, 2, 3, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 2, 1, 1, 1);
     Combos[2] = Combo;
 
     Label = gtk_label_new(_("Bits:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 0, 1, 2, 3, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 2, 1, 1);
     Label = gtk_label_new(_("Stopbits:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 1, 2, 2, 3, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 1, 2, 1, 1);
     Label = gtk_label_new(_("Flow control:"));
-    gtk_table_attach(GTK_TABLE(Table), Label, 2, 3, 2, 3, 0, 0, 10, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 2, 2, 1, 1);
 
     Combo = gtk_combo_box_text_new();
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(Combo), "5");
@@ -343,7 +344,7 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 
     if(config.bits >= 5 && config.bits <= 8)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Combo), config.bits - 5);
-    gtk_table_attach(GTK_TABLE(Table), Combo, 0, 1, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 0, 3, 1, 1);
     Combos[3] = Combo;
 
     Combo = gtk_combo_box_text_new();
@@ -353,7 +354,7 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 
     if(config.stops == 1 || config.stops == 2)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Combo), config.stops - 1);
-    gtk_table_attach(GTK_TABLE(Table), Combo, 1, 2, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 1, 3, 1, 1);
     Combos[4] = Combo;
 
     Combo = gtk_combo_box_text_new();
@@ -378,7 +379,7 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 	    gtk_combo_box_set_active(GTK_COMBO_BOX(Combo), 3);
 	    break;
     }
-    gtk_table_attach(GTK_TABLE(Table), Combo, 2, 3, 3, 4, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Combo, 2, 3, 1, 1);
     Combos[5] = Combo;
 
     /* create an expander widget to hide the 'Advanced features' */
@@ -390,24 +391,25 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
     Frame = gtk_frame_new(_("ASCII file transfer"));
     gtk_container_add(GTK_CONTAINER(ExpanderVbox), Frame);
 
-    Table = gtk_table_new(2, 2, FALSE);
-    gtk_container_add(GTK_CONTAINER(Frame), Table);
+    Grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(Frame), Grid);
+    gtk_grid_set_row_spacing(GTK_GRID(Grid), 5);
 
     Label = gtk_label_new(_("End of line delay (milliseconds):"));
-    gtk_table_attach_defaults(GTK_TABLE(Table), Label, 0, 1, 0, 1);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 0, 1, 1);
 
     adj = gtk_adjustment_new(0.0, 0.0, 500.0, 10.0, 20.0, 0.0);
     Spin = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 0, 0);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(Spin), TRUE);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(Spin), (gfloat)config.delai);
-    gtk_table_attach(GTK_TABLE(Table), Spin, 1, 2, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Spin, 2, 0, 1, 1);
     Combos[6] = Spin;
 
     Entry = gtk_entry_new();
     gtk_entry_set_max_length(GTK_ENTRY(Entry), 1);
 
     gtk_widget_set_sensitive(GTK_WIDGET(Entry), FALSE);
-    gtk_table_attach(GTK_TABLE(Table), Entry, 1, 2, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Entry, 2, 1, 1, 1);
 
     CheckBouton = gtk_check_button_new_with_label(_("Wait for this special character before passing to next line:"));
 
@@ -418,34 +420,35 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
 	gtk_entry_set_text(GTK_ENTRY(Entry), &(config.car));
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(CheckBouton), TRUE);
     }
-    gtk_table_attach_defaults(GTK_TABLE(Table), CheckBouton, 0, 1, 1, 2);
+    gtk_grid_attach(GTK_GRID(Grid), CheckBouton, 0, 1, 2, 1);
     Combos[7] = CheckBouton;
 
 
     Frame = gtk_frame_new(_("RS485 half-duplex parameters (RTS signal used to send)"));
-
     gtk_container_add(GTK_CONTAINER(ExpanderVbox), Frame);
 
-    Table = gtk_table_new(2, 2, FALSE);
-    gtk_container_add(GTK_CONTAINER(Frame), Table);
+    Grid = gtk_grid_new();
+    gtk_container_add(GTK_CONTAINER(Frame), Grid);
+    gtk_grid_set_row_spacing(GTK_GRID(Grid), 5);
 
     Label = gtk_label_new(_("Time with RTS 'on' before transmit (milliseconds):"));
-    gtk_table_attach_defaults(GTK_TABLE(Table), Label, 0, 1, 0, 1);
-    Label = gtk_label_new(_("Time with RTS 'on' after transmit (milliseconds):"));
-    gtk_table_attach_defaults(GTK_TABLE(Table), Label, 0, 1, 1, 2);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 0, 1, 1);
 
     adj = gtk_adjustment_new(0.0, 0.0, 500.0, 10.0, 20.0, 0.0);
     Spin = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 0, 0);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(Spin), TRUE);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(Spin), (gfloat)config.rs485_rts_time_before_transmit);
-    gtk_table_attach(GTK_TABLE(Table), Spin, 1, 2, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Spin, 2, 0, 1, 1);
     Combos[8] = Spin;
+
+    Label = gtk_label_new(_("Time with RTS 'on' after transmit (milliseconds):"));
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 1, 2, 1);
 
     adj = gtk_adjustment_new(0.0, 0.0, 500.0, 10.0, 20.0, 0.0);
     Spin = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 0, 0);
     gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(Spin), TRUE);
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(Spin), (gfloat)config.rs485_rts_time_after_transmit);
-    gtk_table_attach(GTK_TABLE(Table), Spin, 1, 2, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL | GTK_EXPAND, 5, 5);
+    gtk_grid_attach(GTK_GRID(Grid), Spin, 2, 1, 1, 1);
     Combos[9] = Spin;
 
 
@@ -1395,7 +1398,7 @@ gint remove_section(gchar *cfg_file, gchar *section)
 
 void Config_Terminal(GtkAction *action, gpointer data)
 {
-    GtkWidget *Dialog, *content_area, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Table, *HScale, *Entry;
+    GtkWidget *Dialog, *content_area, *BoiteH, *BoiteV, *Label, *Check_Bouton, *Grid, *HScale, *Entry;
     gchar *font, *scrollback;
     GtkWidget *fontButton;
     GtkWidget *fg_color_button;
@@ -1435,28 +1438,27 @@ void Config_Terminal(GtkAction *action, gpointer data)
     gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
 
 
-    Table = gtk_table_new(2, 2, FALSE);
+    Grid = gtk_grid_new();
 
     Label = gtk_label_new("Text color:");
     gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
-    gtk_table_attach(GTK_TABLE(Table), Label, 0, 1, 0, 1, GTK_SHRINK | GTK_FILL, GTK_SHRINK, 10, 0);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 0, 1, 1);
 
     Label = gtk_label_new("Background color:");
     gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
-    gtk_table_attach(GTK_TABLE(Table), Label, 0, 1, 1, 2, GTK_SHRINK | GTK_FILL , GTK_SHRINK, 10, 0);
+    gtk_grid_attach(GTK_GRID(Grid), Label, 0, 1, 1, 1);
 
     fg_color_button = gtk_color_button_new_with_rgba (&term_conf.foreground_color);
     gtk_color_button_set_title (GTK_COLOR_BUTTON (fg_color_button), _("Text color"));
-    gtk_table_attach (GTK_TABLE (Table), fg_color_button, 1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 10, 0);
+    gtk_grid_attach(GTK_GRID(Grid), fg_color_button, 1, 0, 1, 1);
     g_signal_connect (GTK_WIDGET (fg_color_button), "color-set", G_CALLBACK (config_fg_color), NULL);
 
     bg_color_button = gtk_color_button_new_with_rgba (&term_conf.background_color);
     gtk_color_button_set_title (GTK_COLOR_BUTTON (bg_color_button), _("Background color"));
-    gtk_table_attach (GTK_TABLE (Table), bg_color_button, 1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 10, 0);
+    gtk_grid_attach(GTK_GRID(Grid), bg_color_button, 1, 1, 1, 1);
     g_signal_connect (GTK_WIDGET (bg_color_button), "color-set", G_CALLBACK (config_bg_color), NULL);
 
-    gtk_box_pack_start(GTK_BOX(BoiteV), Table, FALSE, TRUE, 0);
-
+    gtk_box_pack_start(GTK_BOX(BoiteV), Grid, FALSE, TRUE, 0);
 
     Label = gtk_label_new(NULL);
     gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
