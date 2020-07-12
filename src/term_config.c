@@ -153,6 +153,9 @@ static gint scrollback_set(GtkWidget *, GdkEventFocus *, gpointer);
 
 extern GtkWidget *display;
 
+#define GUINT16_TO_GDOUBLE(x)  (gdouble)x/65536.0
+#define GDOUBLE_TO_GUINT16(x)  (guint16)(65535.0*x)
+
 void Config_Port_Fenetre(GtkAction *action, gpointer data)
 {
 	GtkWidget *Table, *Label, *Bouton_OK, *Bouton_annule, 
@@ -541,7 +544,7 @@ void read_font_button(GtkFontButton *fontButton)
 	term_conf.font = g_strdup(gtk_font_button_get_font_name(fontButton));
 
 	if(term_conf.font != NULL)
-		vte_terminal_set_font_from_string(VTE_TERMINAL(display), term_conf.font);
+		vte_terminal_set_font(VTE_TERMINAL(display), pango_font_description_from_string(term_conf.font));
 }
 
 
@@ -970,13 +973,16 @@ gint Load_configuration_from_file(gchar *config_name)
 		else
 		    term_conf.visual_bell = FALSE;
 
-		term_conf.foreground_color.red = foreground_red[i];
-		term_conf.foreground_color.green = foreground_green[i];
-		term_conf.foreground_color.blue = foreground_blue[i];
+		term_conf.foreground_color.red = GUINT16_TO_GDOUBLE(foreground_red[i]);
+		term_conf.foreground_color.green = GUINT16_TO_GDOUBLE(foreground_green[i]);
+		term_conf.foreground_color.blue = GUINT16_TO_GDOUBLE(foreground_blue[i]);
 
-		term_conf.background_color.red = background_red[i];
-		term_conf.background_color.green = background_green[i];
-		term_conf.background_color.blue = background_blue[i];
+		term_conf.background_color.red = GUINT16_TO_GDOUBLE(background_red[i]);
+		term_conf.background_color.green = GUINT16_TO_GDOUBLE(background_green[i]);
+		term_conf.background_color.blue = GUINT16_TO_GDOUBLE(background_blue[i]);
+
+        term_conf.foreground_color.alpha = 1.0;
+        term_conf.background_color.alpha = 1.0;
 
 		if(background_saturation[i] != 0)
 		    term_conf.background_saturation = background_saturation[i];
@@ -992,13 +998,15 @@ gint Load_configuration_from_file(gchar *config_name)
 		    term_conf.scrollback = DEFAULT_SCROLLBACK;
 		    term_conf.visual_bell = FALSE;
 
-		    term_conf.foreground_color.red = 43253;
-		    term_conf.foreground_color.green = 43253;
-		    term_conf.foreground_color.blue = 43253;
+		    term_conf.foreground_color.red = GUINT16_TO_GDOUBLE(43253);
+		    term_conf.foreground_color.green = GUINT16_TO_GDOUBLE(43253);
+		    term_conf.foreground_color.blue = GUINT16_TO_GDOUBLE(43253);
+            term_conf.foreground_color.alpha = 1.0;
 
-		    term_conf.background_color.red = 0;
-		    term_conf.background_color.green = 0;
-		    term_conf.background_color.blue = 0;
+		    term_conf.background_color.red = 0.0;
+		    term_conf.background_color.green = 0.0;
+		    term_conf.background_color.blue = 0.0;
+            term_conf.background_color.alpha = 1.0;
 
 		    term_conf.background_saturation = 0.5;
 		}
@@ -1014,14 +1022,14 @@ gint Load_configuration_from_file(gchar *config_name)
 	    return -1;
 	}
     }
-    vte_terminal_set_font_from_string(VTE_TERMINAL(display), term_conf.font);
+    vte_terminal_set_font(VTE_TERMINAL(display), pango_font_description_from_string(term_conf.font));
 
-    vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
+//vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
     vte_terminal_set_size (VTE_TERMINAL(display), term_conf.rows, term_conf.columns);
     vte_terminal_set_scrollback_lines (VTE_TERMINAL(display), term_conf.scrollback);
     vte_terminal_set_color_foreground (VTE_TERMINAL(display), &term_conf.foreground_color);
     vte_terminal_set_color_background (VTE_TERMINAL(display), &term_conf.background_color);
-    vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
+//vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
     gtk_widget_queue_draw(display);
 
     return 0;
@@ -1134,8 +1142,8 @@ void Hard_default_configuration(void)
     term_conf.scrollback = DEFAULT_SCROLLBACK;
     term_conf.visual_bell = TRUE;
 
-    Selec_couleur(&term_conf.foreground_color, 0.66, 0.66, 0.66);
-    Selec_couleur(&term_conf.background_color, 0, 0, 0);
+    gdk_rgba_parse(&term_conf.foreground_color, "rgba(0.66, 0.66, 0.66, 1.0");
+    gdk_rgba_parse(&term_conf.background_color, "rgba(0, 0, 0, 1.0");
 
     term_conf.background_saturation = 0.50;
 }
@@ -1276,23 +1284,23 @@ void Copy_configuration(int pos)
     cfgStoreValue(cfg, "term_visual_bell", string, CFG_INI, pos);
     g_free(string);
 
-    string = g_strdup_printf("%d", term_conf.foreground_color.red);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.red));
     cfgStoreValue(cfg, "term_foreground_red", string, CFG_INI, pos);
     g_free(string);
-    string = g_strdup_printf("%d", term_conf.foreground_color.green);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.green));
     cfgStoreValue(cfg, "term_foreground_green", string, CFG_INI, pos);
     g_free(string);
-    string = g_strdup_printf("%d", term_conf.foreground_color.blue);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.blue));
     cfgStoreValue(cfg, "term_foreground_blue", string, CFG_INI, pos);
     g_free(string);
 
-    string = g_strdup_printf("%d", term_conf.background_color.red);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.red));
     cfgStoreValue(cfg, "term_background_red", string, CFG_INI, pos);
     g_free(string);
-    string = g_strdup_printf("%d", term_conf.background_color.green);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.green));
     cfgStoreValue(cfg, "term_background_green", string, CFG_INI, pos);
     g_free(string);
-    string = g_strdup_printf("%d", term_conf.background_color.blue);
+    string = g_strdup_printf("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.blue));
     cfgStoreValue(cfg, "term_background_blue", string, CFG_INI, pos);
     g_free(string);
 
@@ -1437,12 +1445,12 @@ void Config_Terminal(GtkAction *action, gpointer data)
     gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
     gtk_table_attach(GTK_TABLE(Table), Label, 0, 1, 1, 2, GTK_SHRINK | GTK_FILL , GTK_SHRINK, 10, 0);
 
-    fg_color_button = gtk_color_button_new_with_color (&term_conf.foreground_color);
+    fg_color_button = gtk_color_button_new_with_rgba (&term_conf.foreground_color);
     gtk_color_button_set_title (GTK_COLOR_BUTTON (fg_color_button), _("Text color"));
     gtk_table_attach (GTK_TABLE (Table), fg_color_button, 1, 2, 0, 1, GTK_SHRINK, GTK_SHRINK, 10, 0);
     g_signal_connect (GTK_WIDGET (fg_color_button), "color-set", G_CALLBACK (config_fg_color), NULL);
 
-    bg_color_button = gtk_color_button_new_with_color (&term_conf.background_color);
+    bg_color_button = gtk_color_button_new_with_rgba (&term_conf.background_color);
     gtk_color_button_set_title (GTK_COLOR_BUTTON (bg_color_button), _("Background color"));
     gtk_table_attach (GTK_TABLE (Table), bg_color_button, 1, 2, 1, 2, GTK_SHRINK, GTK_SHRINK, 10, 0);
     g_signal_connect (GTK_WIDGET (bg_color_button), "color-set", G_CALLBACK (config_bg_color), NULL);
@@ -1496,29 +1504,22 @@ void Curseur_OnOff(GtkWidget *Check_Bouton, gpointer data)
     term_conf.show_cursor = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Check_Bouton));
 }
 
-void Selec_couleur(GdkColor *color, gfloat R, gfloat G, gfloat B)
-{
-	color->red = (guint16)(65535*R);
-	color->green = (guint16)(65535*G);
-	color->blue = (guint16)(65535*B);
-}
-
 void config_fg_color(GtkWidget *button, gpointer data)
 {
 	gchar *string;
 
-	gtk_color_button_get_color (GTK_COLOR_BUTTON (button), &term_conf.foreground_color);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (button), &term_conf.foreground_color);
 
 	vte_terminal_set_color_foreground (VTE_TERMINAL(display), &term_conf.foreground_color);
 	gtk_widget_queue_draw (display);
 
-	string = g_strdup_printf ("%d", term_conf.foreground_color.red);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.red));
 	cfgStoreValue (cfg, "term_foreground_red", string, CFG_INI, 0);
 	g_free (string);
-	string = g_strdup_printf ("%d", term_conf.foreground_color.green);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.green));
 	cfgStoreValue (cfg, "term_foreground_green", string, CFG_INI, 0);
 	g_free (string);
-	string = g_strdup_printf ("%d", term_conf.foreground_color.blue);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.foreground_color.blue));
 	cfgStoreValue (cfg, "term_foreground_blue", string, CFG_INI, 0);
 	g_free (string);
 }
@@ -1527,18 +1528,18 @@ void config_bg_color(GtkWidget *button, gpointer data)
 {
 	gchar *string;
 
-	gtk_color_button_get_color (GTK_COLOR_BUTTON (button), &term_conf.background_color);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (button), &term_conf.background_color);
 
 	vte_terminal_set_color_background (VTE_TERMINAL(display), &term_conf.background_color);
 	gtk_widget_queue_draw (display);
 
-	string = g_strdup_printf ("%d", term_conf.background_color.red);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.red));
 	cfgStoreValue (cfg, "term_background_red", string, CFG_INI, 0);
 	g_free (string);
-	string = g_strdup_printf ("%d", term_conf.background_color.green);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.green));
 	cfgStoreValue (cfg, "term_background_green", string, CFG_INI, 0);
 	g_free (string);
-	string = g_strdup_printf ("%d", term_conf.background_color.blue);
+	string = g_strdup_printf ("%d", GDOUBLE_TO_GUINT16(term_conf.background_color.blue));
 	cfgStoreValue (cfg, "term_background_blue", string, CFG_INI, 0);
 	g_free (string);
 }
@@ -1549,7 +1550,7 @@ static void Transparency_OnOff(GtkWidget *Check_Bouton, gpointer data)
     gchar *string;
 
     term_conf.transparency = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Check_Bouton));
-    vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
+//vte_terminal_set_background_transparent(VTE_TERMINAL(display), term_conf.transparency);
     gtk_widget_set_sensitive(GTK_WIDGET(data), term_conf.transparency);
 
     if(term_conf.transparency == FALSE)
@@ -1565,7 +1566,7 @@ static void change_scale(GtkRange *range, gpointer data)
 {
     gchar *string;
     term_conf.background_saturation = gtk_range_get_value(GTK_RANGE(range))/100.0;
-    vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
+//vte_terminal_set_background_saturation(VTE_TERMINAL(display), (gdouble)term_conf.background_saturation);
 
     string = g_strdup_printf("%g", term_conf.background_saturation);
     cfgStoreValue(cfg, "term_background_saturation", string, CFG_INI, 0);
