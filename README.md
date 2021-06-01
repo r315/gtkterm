@@ -54,9 +54,9 @@ driver.  This is an inherent limitation to user space programs.
 
 GtkTerm has a few dependencies-
 
-* Gtk+2.0 (version 2.6 or higher)
-* vte (version 0.20 or higher)
-* intltool (version 0.40.0 or higher)
+* Gtk+3.0 (version 3.0 or higher)
+* vte (version 0.42.5 or higher)
+* intltool (version 0.51.0 or higher)
 
 Once these dependencies are installed, most people should simply run:
 
