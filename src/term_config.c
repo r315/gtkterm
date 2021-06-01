@@ -452,11 +452,12 @@ void Config_Port_Fenetre(GtkAction *action, gpointer data)
     Combos[9] = Spin;
 
 
-    Bouton_OK = gtk_button_new_from_stock(GTK_STOCK_OK);
-    gtk_box_pack_start(GTK_BOX(action_area), Bouton_OK, FALSE, TRUE, 0);
+    Bouton_OK = gtk_button_new_with_label("Ok");
     g_signal_connect(GTK_WIDGET(Bouton_OK), "clicked", G_CALLBACK(Lis_Config), (gpointer)Combos);
     g_signal_connect_swapped(GTK_WIDGET(Bouton_OK), "clicked", G_CALLBACK(gtk_widget_destroy), GTK_WIDGET(Dialogue));
-    Bouton_annule = gtk_button_new_from_stock(GTK_STOCK_CANCEL);
+    gtk_box_pack_start(GTK_BOX(action_area), Bouton_OK, FALSE, TRUE, 0);    
+    
+    Bouton_annule = gtk_button_new_with_label("Cancel");
     g_signal_connect_swapped(GTK_WIDGET(Bouton_annule), "clicked", G_CALLBACK(gtk_widget_destroy), GTK_WIDGET(Dialogue));
     gtk_box_pack_start(GTK_BOX(action_area), Bouton_annule, FALSE, TRUE, 0);
 
@@ -604,9 +605,9 @@ void Select_config(gchar *title, void *callback)
 	dialog = gtk_dialog_new_with_buttons (title,
 					      NULL,
 					      GTK_DIALOG_DESTROY_WITH_PARENT,
-					      GTK_STOCK_CANCEL,
+					      "Cancel",
 					      GTK_RESPONSE_NONE,
-					      GTK_STOCK_OK,
+					      "Ok",
 					      GTK_RESPONSE_ACCEPT,
 					      NULL);
 
@@ -669,9 +670,9 @@ void Save_config_file(void)
     dialog = gtk_dialog_new_with_buttons (_("Save configuration"),
 					  NULL,
 					  GTK_DIALOG_DESTROY_WITH_PARENT,
-					  GTK_STOCK_CANCEL,
+					  "Cancel",
 					  GTK_RESPONSE_NONE,
-					  GTK_STOCK_OK,
+					  "Ok",
 					  GTK_RESPONSE_ACCEPT,
 					  NULL);
     content_area = gtk_dialog_get_content_area (GTK_DIALOG(dialog));
@@ -779,9 +780,9 @@ void save_config(GtkDialog *Fenetre, gint id, GtkWidget *edit)
 				                     config_name);
 
 				gtk_dialog_add_buttons(GTK_DIALOG(message_dialog),
-				                       GTK_STOCK_CANCEL,
+				                       "Cancel",
 				                       GTK_RESPONSE_NONE,
-				                       GTK_STOCK_YES,
+				                       "Yes",
 				                       GTK_RESPONSE_ACCEPT,
 				                       NULL);
 
@@ -1407,7 +1408,7 @@ void Config_Terminal(GtkAction *action, gpointer data)
     Dialog = gtk_dialog_new_with_buttons (_("Terminal configuration"),
 					  NULL,
 					  GTK_DIALOG_DESTROY_WITH_PARENT,
-					  GTK_STOCK_CLOSE,
+					  "_Close",
 					  GTK_RESPONSE_CLOSE,
 					  NULL);
     gtk_widget_set_size_request(GTK_WIDGET(Dialog), 400, 400);
@@ -1433,7 +1434,8 @@ void Config_Terminal(GtkAction *action, gpointer data)
     gtk_box_pack_start(GTK_BOX(BoiteV), Check_Bouton, FALSE, TRUE, 5);
 
     Label = gtk_label_new(NULL);
-    gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
+    gtk_widget_set_halign(Label, 0);
+    gtk_widget_set_valign(Label, 0);
     gtk_label_set_markup(GTK_LABEL(Label), "<b>Colors: </b>");
     gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
 
@@ -1461,7 +1463,8 @@ void Config_Terminal(GtkAction *action, gpointer data)
     gtk_box_pack_start(GTK_BOX(BoiteV), Grid, FALSE, TRUE, 0);
 
     Label = gtk_label_new(NULL);
-    gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
+    gtk_widget_set_halign(Label, 0);
+    gtk_widget_set_valign(Label, 0);
     gtk_label_set_markup(GTK_LABEL(Label), "<b>Transparency: </b>");
     gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
 
@@ -1477,7 +1480,8 @@ void Config_Terminal(GtkAction *action, gpointer data)
     gtk_box_pack_start(GTK_BOX(BoiteV), HScale, FALSE, TRUE, 0);
 
     Label = gtk_label_new(NULL);
-    gtk_misc_set_alignment(GTK_MISC(Label), 0, 0);
+    gtk_widget_set_halign(Label, 0);
+    gtk_widget_set_valign(Label, 0);
     gtk_label_set_markup(GTK_LABEL(Label), "<b>Screen: </b>");  
     gtk_box_pack_start(GTK_BOX(BoiteV), Label, FALSE, TRUE, 10);
 

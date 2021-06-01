@@ -533,6 +533,9 @@ void create_main_window(void)
   /* status bar */
   StatusBar = gtk_statusbar_new();
   gtk_box_pack_start(GTK_BOX(main_vbox), StatusBar, FALSE, FALSE, 0);
+  gtk_widget_set_margin_top(GTK_WIDGET(StatusBar), 0);
+  gtk_widget_set_margin_bottom(GTK_WIDGET(StatusBar), 0);
+
   id = gtk_statusbar_get_context_id(GTK_STATUSBAR(StatusBar), "Messages");
 
   label = gtk_label_new("RI");
